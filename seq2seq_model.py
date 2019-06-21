@@ -123,4 +123,6 @@ class Decoder(tf.keras.Model):
 
         return x,state,attention_weights
 
+    def initialize_hidden_state(self):
+        return tf.aeros((self._batch_sz,self._dec_units))
 

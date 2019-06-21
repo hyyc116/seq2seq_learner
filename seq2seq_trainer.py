@@ -15,6 +15,7 @@ import os
 import time
 from scipy import stats
 
+
 ## 数据的位置
 ## 数据的格式是 pos===========================title===========================content
 def load_data():
@@ -98,6 +99,10 @@ class WordIndex():
             self.ix2word[ix] = word
 
 
+def loss_function(real,pref):
+    mask = 1-np.equal(real,0)
+
+    loss = tf.nn.
 
 
 
