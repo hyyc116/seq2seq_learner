@@ -15,6 +15,8 @@ import os
 import time
 from scipy import stats
 
+from seq2seq_model import Encoder,Decoder
+
 
 ## 数据的位置
 ## 数据的格式是 pos===========================title===========================content
@@ -102,7 +104,54 @@ class WordIndex():
 def loss_function(real,pref):
     mask = 1-np.equal(real,0)
 
-    loss = tf.nn.
+    loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=real, logits=pred) * mask
+
+    return tf.reduce_mean(loss)
+
+
+class S2SM:
+
+    def __init__(self):
+        ## 加载数据
+        input_tensor,target_tensor,mode_length_inp,max_length_tar,input_wix,target_wix = load_data()
+        vocab_inp_size = len(input_wix.word2ix)
+        vocab_tar_size = len(target_wix.word2ix)
+        ## 分为训练数据和测试数据
+        self._input_tensor_train, self._input_tensor_val, self._target_tensor_train, self._target_tensor_val = train_test_split(input_tensor, target_tensor, test_size=0.2)
+
+        ## 超参数
+        self._units = 512
+        self._batch_sz = 64
+        self._embdding_dim = 256
+        self._buffer_size = len(self._input_tensor_train)
+        self._n_batchs =self._buffer_size//self._batch_sz
+
+        ## 数据集
+        self._dataset = tf.data.Dataset.from_tensor_slices((self._input_tensor_train, self._target_tensor_train)).shuffle(self._buffer_size)
+        self._dataset = dataset.batch(self._batch_sz, drop_remainder=True)
+
+        ## 初始化encoder以及decoder
+        self._encoder = Encoder(vocab_inp_size,self._embdding_dim,self._batch_sz)
+        self._decoder = Decoder(vocab_tar_size,self._embdding_dim,self._batch_sz)
+
+
+    def train(self):
+
+        EPOCHS = 10
+
+        for epoch in range(EPOCHS):
+            start = time.time()
+
+            hideen = self._encoder.initialize_hidden_state()
+            total_loss = 0
+
+            for (batch,(inp,targ)) in enumerate(self._dataset):
+                loss = 0
+
+                with tf.GradientTaper as tape:
+
+                    enc_output, enc_hidden = self._encoder()
+
 
 
 
