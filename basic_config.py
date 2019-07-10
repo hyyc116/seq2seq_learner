@@ -61,7 +61,7 @@ params = {'legend.fontsize': 8,
 pylab.rcParams.update(params)
 
 
-from paths import *
+# from paths import *
 
 
 def circle(ax,x,y,radius=0.15):
