@@ -51,7 +51,7 @@ def read_data(field,tag):
 
     print('{} fields related to {}.'.format(len(field_id_name_dict),field))
 
-    open('data/mag_{}_field_id_name_dict.json'.format(tag),'w').write(json.dumps(mag_field_id_name_dict))
+    open('data/mag_{}_field_id_name_dict.json'.format(tag),'w').write(json.dumps(field_id_name_dict))
     
     print('paper fields mapping saved to data/mag_{}_field_id_name_dict.json'.format(tag))
     ## 然后，从mag_core.paper_fields_of_study找出对应id的论文
