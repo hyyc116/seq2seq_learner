@@ -69,7 +69,7 @@ def read_data(field,tag):
         if progress%100000==0:
             print('read field paper progress {} ...'.format(progress))
 
-        if field_id_name_dict.get(field_of_study_id,None) is None:
+        if field_id_name_dict.get(field_of_study_id,None) is None or score < 0.1:
             continue
 
         paper_fields[paper_id].append(field_of_study_id)
@@ -97,7 +97,7 @@ def read_data(field,tag):
         author_papers[author_id].append([paper_id,author_sequence_number])
 
     print('There are {} authors in this field..'.format(len(author_papers)))
-    open('data/mag_{}_author_papers.json'.format(tag),'w').write(author_papers)
+    open('data/mag_{}_author_papers.json'.format(tag),'w').write(json.dumps(author_papers))
     print('author papers json saved to data/mag_{}_author_papers.json'.format(tag))
 
     print('Done')
