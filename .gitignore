@@ -7,6 +7,10 @@ __pycache__/
 *.so
 logs/
 data/
+logs/
+data/
+tranning_checkpoints/
+subcascade/data/
 subcascade/data/
 # Distribution / packaging
 .Python

@@ -9,7 +9,8 @@ define transformer
 from __future__ import absolute_import,division,print_function,unicode_literals
 
 import tensorflow as tf 
-tf.enable_eager_execution()
+# tf.enable_eager_execution()
+tf.compat.v1.enable_eager_execution()
 
 import numpy as np 
 import os
@@ -34,7 +35,7 @@ def gru(units):
 class Encoder(tf.keras.Model):
 
     def __init__(self,vocab_size,embedding_dim,enc_units,batch_sz):
-        super(Encoder.self).__init__()
+        super(Encoder,self).__init__()
 
         self._vocab_size = vocab_size
         self._embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim)
@@ -46,10 +47,10 @@ class Encoder(tf.keras.Model):
     ##定义前向传播方法
     def call(self,x,hidden):
         ## 将输入转化为embedding
-        x = self.embedding(x)
+        x = self._embedding(x)
 
         ## 使用gru的RNN进行前向传播，得到每一步的输出以及state
-        output,state = self.gru(x,initial_state = hidden)
+        output,state = self._gru(x,initial_state = hidden)
         return output,state
 
     def initialize_hidden_state(self):
@@ -61,7 +62,7 @@ class Encoder(tf.keras.Model):
 class BahdanauAttention(tf.keras.Model):
 
     def __init__(self,units):
-        super(BahdanauAttention.self).__init__()
+        super(BahdanauAttention,self).__init__()
 
         self._W1 = tf.keras.layers.Dense(units)
 
@@ -72,6 +73,9 @@ class BahdanauAttention(tf.keras.Model):
     def call(self,query,values):
 
         hidden_with_time_axis = tf.expand_dims(query,1)
+        # print('hideen',query.shape)
+        # print('hidden time',hidden_with_time_axis.shape)
+        # print('output',values.shape)
 
         score = self._V(tf.nn.tanh(self._W1(values)+self._W2(hidden_with_time_axis)))
 
@@ -89,7 +93,7 @@ class Decoder(tf.keras.Model):
 
     def __init__(self,vocab_size,embedding_dim,dec_units,batch_sz):
 
-        super(Decoder.self).__init__()
+        super(Decoder,self).__init__()
 
         self._batch_sz = batch_sz
 
@@ -97,7 +101,7 @@ class Decoder(tf.keras.Model):
         ## encoder decoder的embedding是不共享的
         self._embedding = tf.keras.layers.Embedding(vocab_size,embedding_dim)
 
-        self._gru = gru(self.dec_units)
+        self._gru = gru(self._dec_units)
 
         self._fc = tf.keras.layers.Dense(vocab_size)
 
@@ -115,7 +119,7 @@ class Decoder(tf.keras.Model):
         ## 将context vector与就之前的output进行串联
         x = tf.concat([tf.expand_dims(context_vector,1),x],axis=-1)
 
-        output,state = self.gru(x)
+        output,state = self._gru(x)
 
         output = tf.reshape(output,(-1,output.shape[2]))
 
