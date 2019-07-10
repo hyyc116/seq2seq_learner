@@ -37,7 +37,7 @@ def read_data(field,tag):
     ## 首先从mag_core.fields_of_study找出和计算机相关的专业的id
     progress = 0
     field_id_name_dict = {}
-    for field_of_study_id,normalized_name in query_op.query_database('select field_of_study_id,normalized_name frm mag_core.fields_of_study'):
+    for field_of_study_id,normalized_name in query_op.query_database('select field_of_study_id,normalized_name from mag_core.fields_of_study'):
 
         progress+=1
 
@@ -66,7 +66,7 @@ def read_data(field,tag):
 
         progress+=1
 
-        if progress%10000==0:
+        if progress%100000==0:
             print('read field paper progress {} ...'.format(progress))
 
         if field_id_name_dict.get(field_of_study_id,None) is None:
@@ -88,7 +88,7 @@ def read_data(field,tag):
 
         progress+=1
 
-        if progress&10000==0:
+        if progress&100000==0:
             print('read author id {} ...'.format(progress))
 
         if paper_fields.get(paper_id,None) is None:
