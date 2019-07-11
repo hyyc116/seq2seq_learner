@@ -195,6 +195,8 @@ def paper_author_cits(tag):
 
     author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
 
+    open('data/mag_{}_2012_papers.txt','w').write('\n'.join(paper_ids))
+
     reserved_authors = [ author.strip() for author in  open('data/mag_{}_reserved_authors.txt'.format(tag))]
 
     reserved_paper_ids = []
@@ -208,6 +210,11 @@ def paper_author_cits(tag):
 
     reserved_paper_ids = set(reserved_paper_ids)
 
+    open('data/mag_{}_reserved_papers.txt','w').write('\n'.join(reserved_paper_ids))
+
+
+    print('Number of papers of auhtors is {}.'.format(len(reserved_paper_ids)))
+
     ## 根据paper_ids以及已存在的
     query_op = dbop()
 
@@ -218,13 +225,12 @@ def paper_author_cits(tag):
 
         progress +=1
 
-        if progress%100000==0:
+        if progress%10000000==0:
             print('progress {}, {} citations ...'.format(progress,len(paper_refs)))
 
         if paper_id in reserved_paper_ids or  paper_reference_id in paper_ids:
 
             paper_refs.append('{},{}'.format(paper_id,paper_reference_id))
-
 
     open('data/mag_{}_paper_cits.png'.format(tag),'w').write('\n'.join(paper_refs))
     print('{} citation relations saved to data/mag_{}_paper_cits.png'.format(len(paper_refs),tag))
