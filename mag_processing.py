@@ -145,6 +145,9 @@ def read_paper_year(field,tag):
     plt.xlabel("year")
     plt.ylabel("number of papers")
 
+    plt.yscale('log')
+    
+
     plt.tight_layout()
 
     plt.savefig('fig/mag_{}_paper_year_num_dis.png'.format(tag),dpi=400)
