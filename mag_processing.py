@@ -32,7 +32,7 @@ AND schemaname != 'information_schema';
 from basic_config import *
 
 def read_data(field,tag):
-    
+
     query_op = dbop()
     ## 首先从mag_core.fields_of_study找出和计算机相关的专业的id
     progress = 0
@@ -52,7 +52,7 @@ def read_data(field,tag):
     print('{} fields related to {}.'.format(len(field_id_name_dict),field))
 
     open('data/mag_{}_field_id_name_dict.json'.format(tag),'w').write(json.dumps(field_id_name_dict))
-    
+
     print('paper fields mapping saved to data/mag_{}_field_id_name_dict.json'.format(tag))
     ## 然后，从mag_core.paper_fields_of_study找出对应id的论文
 
@@ -88,7 +88,7 @@ def read_data(field,tag):
 
         progress+=1
 
-        if progress&100000==0:
+        if progress%100000==0:
             print('read author id {} ...'.format(progress))
 
         if paper_fields.get(paper_id,None) is None:
@@ -126,7 +126,7 @@ def read_paper_year(field,tag):
 
     print('Done, {}/{} paper has year ...'.format(len(paper_year),len(paper_fields)))
 
-   
+
 
 if __name__ == '__main__':
     # read_data('computer science','cs')
