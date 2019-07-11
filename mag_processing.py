@@ -214,7 +214,7 @@ def paper_author_cits(tag):
         progress +=1
 
         if progress%100000==0:
-            print('progress {} ...'.format(progress))
+            print('progress {}, {} citations ...'.format(progress,len(paper_refs)))
 
         if paper_id in paper_ids or  paper_reference_id in paper_ids:
 
