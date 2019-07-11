@@ -178,10 +178,51 @@ def filter_authors_by_year(tag,f_year):
 
     open('data/mag_{}_reserved_authors.txt'.format(tag),'w').write('\n'.join(reserved_authors))
 
-    print('Data saved to data/mag_{}_reserved_authors_{}.txt'.format(tag,f_year))
+    print('Data saved to data/mag_{}_reserved_authors.txt'.format(tag))
+
+## 将2012年的论文 预测其2013年后 2014年后 2017年被2012年之前的作者引用的次数
+def paper_author_cits(tag):
+
+    paper_year = json.loads(open('data/mag_{}_paper_year.json'.format(tag)).read())
+
+    paper_ids= []
+    for paper in paper_year.keys():
+
+        year  = int(paper_year[paper])
+
+        if year==2012:
+            paper_ids.append(paper)
+
+    author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
+
+    reserved_authors = [ author.strip() for author in  open('data/mag_{}_reserved_authors.txt'.format(tag))]
+
+    for author in reserved_authors:
+
+        paper_ids.extend([p for p,_ in author_papers[author]])
+
+    paper_ids = set(paper_ids)
+
+    ## 根据paper_ids以及已存在的
+    query_op = dbop()
+
+    sql = 'select paper_id,paper_reference_id from paper_references'
+    progress = 0
+    paper_refs = []
+    for paper_id,paper_reference_id in query_op.query_database(sql):
+
+        progress +=1
+
+        if progress%100000==0:
+            print('progress {} ...'.format(progress))
+
+        if paper_id in paper_ids or  paper_reference_id in paper_ids:
+
+            paper_refs.append('{},{}'.format(paper_id,paper_reference_id))
 
 
-## 6
+    open('data/mag_{}_paper_cits.png'.format(tag),'w').write('\n'.join(paper_refs))
+    print('{} citation relations saved to data/mag_{}_paper_cits.png'.format(len(paper_refs),tag))
 
 
 if __name__ == '__main__':
@@ -189,6 +230,7 @@ if __name__ == '__main__':
     tag = 'cs'
     # read_data(field,tag)
     # read_paper_year(field,tag)
-    filter_authors_by_year(tag,2012)
+    # filter_authors_by_year(tag,2012)
+    paper_author_cits(tag)
 
 
