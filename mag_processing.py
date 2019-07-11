@@ -197,11 +197,16 @@ def paper_author_cits(tag):
 
     reserved_authors = [ author.strip() for author in  open('data/mag_{}_reserved_authors.txt'.format(tag))]
 
+    reserved_paper_ids = []
     for author in reserved_authors:
 
-        paper_ids.extend([p for p,_ in author_papers[author]])
+        reserved_paper_ids.extend([p for p,_ in author_papers[author]])
 
     paper_ids = set(paper_ids)
+
+    print('Number of papers published in 2012 is {}.'.format(len(paper_ids)))
+
+    reserved_paper_ids = set(reserved_paper_ids)
 
     ## 根据paper_ids以及已存在的
     query_op = dbop()
@@ -216,7 +221,7 @@ def paper_author_cits(tag):
         if progress%100000==0:
             print('progress {}, {} citations ...'.format(progress,len(paper_refs)))
 
-        if paper_id in paper_ids or  paper_reference_id in paper_ids:
+        if paper_id in reserved_paper_ids or  paper_reference_id in paper_ids:
 
             paper_refs.append('{},{}'.format(paper_id,paper_reference_id))
 
