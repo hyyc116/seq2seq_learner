@@ -102,13 +102,32 @@ def read_data(field,tag):
 
     print('Done')
 
+
     # 根据作者的id，获取作者所有的论文
 
+def read_paper_year(field,tag):
 
+    paper_fields = json.loads('data/mag_{}_paper_fields.json'.format(tag))
+    query_op = dbop()
+    sql = 'select paper_id,year from mag_core.papers'
+    paper_year = {}
+    progress = 0
+    for paper_id,year in query_op.query_database(sql):
 
+        if paper_fields.get(paper_id,None) is None:
+            continue
 
+        paper_year[paper_id] = year
+
+        progress+=1
+
+        if progress%1000000==0:
+            print('Read paper year， progress {}, {} paper has year ...'.format(progress,len(paper_year)))
+
+    print('Done, {}/{} paper has year ...'.format(len(paper_year),len(paper_fields)))
 
    
 
 if __name__ == '__main__':
-    read_data('computer science','cs')
+    # read_data('computer science','cs')
+    read_paper_year('computer science','cs')
