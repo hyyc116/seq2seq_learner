@@ -170,7 +170,7 @@ def filter_authors_by_year(tag,f_year):
 
             years.append(int(paper_year[paper]))
 
-        if np.min(years) <f_year and np.max(year)>2017:
+        if np.min(years) <f_year and np.max(years)>2017:
 
             reserved_authors.append(author)
 
