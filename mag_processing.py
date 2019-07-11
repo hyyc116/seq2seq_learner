@@ -107,7 +107,7 @@ def read_data(field,tag):
 
 def read_paper_year(field,tag):
 
-    paper_fields = json.loads('data/mag_{}_paper_fields.json'.format(tag))
+    paper_fields = json.loads(open('data/mag_{}_paper_fields.json'.format(tag)).read())
     query_op = dbop()
     sql = 'select paper_id,year from mag_core.papers'
     paper_year = {}
