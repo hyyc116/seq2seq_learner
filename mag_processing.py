@@ -206,7 +206,7 @@ def paper_author_cits(tag):
     ## 根据paper_ids以及已存在的
     query_op = dbop()
 
-    sql = 'select paper_id,paper_reference_id from paper_references'
+    sql = 'select paper_id,paper_reference_id from mag_core.paper_references'
     progress = 0
     paper_refs = []
     for paper_id,paper_reference_id in query_op.query_database(sql):
