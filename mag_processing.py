@@ -154,6 +154,39 @@ def read_paper_year(field,tag):
 
     print('Fig saved to fig/mag_{}_paper_year_num_dis.png'.format(tag))
 
+## 作者以2012为界限，分为2012年以前以及2012年之后两部分，作者在2012年以前发表过论文就是2012年之前的作者，并且在2012年之后也发表过论文就是我们需要的作者
+def filter_authors_by_year(tag,f_year):
+
+    author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
+
+    paper_year = json.loads(open('data/mag_{}_paper_year.json'.format(tag)).read())
+
+    ## 根据上述规则对用户进行筛选
+    reserved_authors = []
+    for author in author_papers:
+
+        years = []
+        for paper,sn in author_papers[author]:
+
+            years.append(int(paper_year[paper]))
+
+        if np.min(years) <f_year and np.max(year)>2017:
+
+            reserved_authors.append(author)
+
+    print('{} Authors reserved.'.format(len(reserved_authors)))
+
+    open('data/mag_{}_reserved_authors.txt'.format(tag),'w').write('\n'.join(reserved_authors))
+
+    print('Data saved to data/mag_{}_reserved_authors_{}.txt'.format(tag,f_year))
+
+
+
 if __name__ == '__main__':
-    # read_data('computer science','cs')
-    read_paper_year('computer science','cs')
+    field = 'computer science'
+    tag = 'cs'
+    # read_data(field,tag)
+    # read_paper_year(field,tag)
+    filter_authors_by_year(tag,2012)
+
+
