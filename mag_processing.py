@@ -112,21 +112,44 @@ def read_paper_year(field,tag):
     sql = 'select paper_id,year from mag_core.papers'
     paper_year = {}
     progress = 0
+    year_dis = defaultdict(int)
     for paper_id,year in query_op.query_database(sql):
-
-        if paper_fields.get(paper_id,None) is None:
-            continue
-
-        paper_year[paper_id] = year
 
         progress+=1
 
         if progress%1000000==0:
             print('Read paper year， progress {}, {} paper has year ...'.format(progress,len(paper_year)))
 
+        if paper_fields.get(paper_id,None) is None:
+            continue
+
+        paper_year[paper_id] = year
+
+        year_dis[int(year)]+=1
+
     print('Done, {}/{} paper has year ...'.format(len(paper_year),len(paper_fields)))
+    open('data/mag_{}_paper_year.json'.format(tag),'w').write(json.dumps(paper_year))
+    print('Data saved to data/mag_{}_paper_year.json'.format(tag))
 
+    xs = []
+    ys = []
 
+    for x in sorted(year_dis.keys()):
+        xs.append(x)
+        ys.append(year_dis[x])
+
+    plt.figure(figsize=(4,3))
+
+    plt.plot(xs,ys)
+
+    plt.xlabel("year")
+    plt.ylabel("number of papers")
+
+    plt.tight_layout()
+
+    plt.savefig('fig/mag_{}_paper_year_num_dis.png'.format(tag),dpi=400)
+
+    print('Fig saved to fig/mag_{}_paper_year_num_dis.png'.format(tag))
 
 if __name__ == '__main__':
     # read_data('computer science','cs')
