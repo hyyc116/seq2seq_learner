@@ -287,7 +287,7 @@ def filter_papers(tag):
 
         total = len(_2012_papers_cits[paper_id])
 
-        limit = len(_2012_papers_limit_cits)
+        limit = len(_2012_papers_limit_cits[paper_id])
 
 
         xs.append(total)
