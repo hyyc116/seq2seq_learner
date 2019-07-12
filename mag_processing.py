@@ -251,7 +251,7 @@ def filter_papers(tag):
 
     ## 统计2012年论文的引用次数
     _2012_paper_cn = defaultdict(int)
-    _2012_paper_cits = defaultdict(list)
+    _2012_papers_cits = defaultdict(list)
     _2012_papers_limit_cits = defaultdict(list)
 
     ## 加载引用关系
@@ -265,7 +265,7 @@ def filter_papers(tag):
 
             _2012_paper_cn[cited_pid]+=1
 
-            _2012_paper_cits[cited_pid].append(pid)
+            _2012_papers_cits[cited_pid].append(pid)
 
             if pid in reserved_paper_ids:
 
