@@ -252,7 +252,7 @@ def filter_papers(tag):
     ## 统计2012年论文的引用次数
     _2012_paper_cn = defaultdict(int)
     _2012_paper_cits = defaultdict(list)
-    _2012_papers_limit_cits = defaultdict(int)
+    _2012_papers_limit_cits = defaultdict(list)
 
     ## 加载引用关系
     for line in open('data/mag_{}_paper_cits.txt'.format(tag)):
