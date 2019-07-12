@@ -302,6 +302,9 @@ def filter_papers(tag):
     plt.xlabel("total number of citations")
     plt.ylabel('citations made by old authors')
 
+    plt.xscale('log')
+    plt.yscale('log')
+
     plt.tight_layout()
 
     plt.savefig('fig/_2012_paper_cit_limit.png',dpi=400)
