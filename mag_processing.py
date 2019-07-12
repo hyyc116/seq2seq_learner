@@ -237,7 +237,7 @@ def paper_author_cits(tag):
 
 
 ## 根据N年的历史进行预测N年的结果
-def filter_papers():
+def filter_papers(tag):
     ## 根据文章的被引用情况对2012年的论文进行筛选
     _2012_papers = set([paper_id.strip() for paper_id in open('data/mag_{}_2012_papers.txt'.format(tag))])
 
@@ -317,6 +317,6 @@ if __name__ == '__main__':
     # filter_authors_by_year(tag,2012)
     # paper_author_cits(tag)
 
-    filter_papers()
+    filter_papers(tag)
 
 
