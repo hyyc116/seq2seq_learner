@@ -297,7 +297,7 @@ def filter_papers(tag):
 
     plt.figure(figsize=(4,3))
 
-    plt.plot(xs,ys,'.')
+    plt.plot(xs,ys,'o')
 
     plt.xlabel("total number of citations")
     plt.ylabel('citations made by old authors')
