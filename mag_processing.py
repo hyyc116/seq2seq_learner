@@ -291,7 +291,7 @@ def filter_papers(tag):
 
 
         xs.append(total)
-        ya.append(limit)
+        ys.append(limit)
 
     print('Total number of papers:{} ...'.format(num_count))
 
