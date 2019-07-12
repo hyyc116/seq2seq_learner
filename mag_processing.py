@@ -195,7 +195,7 @@ def paper_author_cits(tag):
 
     author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
 
-    open('data/mag_{}_2012_papers.txt','w').write('\n'.join(paper_ids))
+    open('data/mag_{}_2012_papers.txt'.format(tag),'w').write('\n'.join(paper_ids))
 
     reserved_authors = [ author.strip() for author in  open('data/mag_{}_reserved_authors.txt'.format(tag))]
 
@@ -210,7 +210,7 @@ def paper_author_cits(tag):
 
     reserved_paper_ids = set(reserved_paper_ids)
 
-    open('data/mag_{}_reserved_papers.txt','w').write('\n'.join(reserved_paper_ids))
+    open('data/mag_{}_reserved_papers.txt'.format(tag),'w').write('\n'.join(reserved_paper_ids))
 
 
     print('Number of papers of auhtors is {}.'.format(len(reserved_paper_ids)))
@@ -232,8 +232,81 @@ def paper_author_cits(tag):
 
             paper_refs.append('{},{}'.format(paper_id,paper_reference_id))
 
-    open('data/mag_{}_paper_cits.png'.format(tag),'w').write('\n'.join(paper_refs))
-    print('{} citation relations saved to data/mag_{}_paper_cits.png'.format(len(paper_refs),tag))
+    open('data/mag_{}_paper_cits.txt'.format(tag),'w').write('\n'.join(paper_refs))
+    print('{} citation relations saved to data/mag_{}_paper_cits.txt'.format(len(paper_refs),tag))
+
+
+## 根据N年的历史进行预测N年的结果
+def filter_papers():
+    ## 根据文章的被引用情况对2012年的论文进行筛选
+    _2012_papers = set([paper_id.strip() for paper_id in open('data/mag_{}_2012_papers.txt'.format(tag))])
+
+    reserved_paper_ids = set([paper_id.strip() for paper_id in open('data/mag_{}_reserved_papers.txt'.format(tag))])
+
+    ##加载作者文章
+    author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
+
+    ## paper year
+    paper_year = json.loads(open('data/mag_{}_paper_year.json'.format(tag)).read())
+
+    ## 统计2012年论文的引用次数
+    _2012_paper_cn = defaultdict(int)
+    _2012_paper_cits = defaultdict(list)
+    _2012_papers_limit_cits = defaultdict(int)
+
+    ## 加载引用关系
+    for line in open('data/mag_{}_paper_cits.txt'.format(tag)):
+
+        line = line.strip()
+
+        pid,cited_pid = line.split(',')
+
+        if cited_pid in _2012_papers:
+
+            _2012_paper_cn[cited_pid]+=1
+
+            _2012_paper_cits[cited_pid].append(pid)
+
+            if pid in reserved_paper_ids:
+
+                _2012_papers_limit_cits[cited_pid].append(pid)
+
+
+    ## 统计分析随着时间 2012年作者
+    num_count = 0
+
+    xs = []
+
+    ys = []
+    for paper_id in _2012_paper_cn.keys():
+
+        if _2012_paper_cn[paper_id]<10:
+            continue
+
+        num_count+=1
+
+        total = len(_2012_papers_cits[paper_id])
+
+        limit = len(_2012_papers_limit_cits)
+
+
+        xs.append(total)
+        ya.append(limit)
+
+    print('Total number of papers:{} ...'.format(num_count))
+
+    plt.figure(figsize=(4,3))
+
+    plt.plot(xs,ys,'.')
+
+    plt.xlabel("total number of citations")
+    plt.ylabel('citations made by old authors')
+
+    plt.tight_layout()
+
+    plt.savefig('fig/_2012_paper_cit_limit.png',dpi=400)
+
+    print('Number of paper citations and limitations.')
 
 
 if __name__ == '__main__':
@@ -242,6 +315,8 @@ if __name__ == '__main__':
     # read_data(field,tag)
     # read_paper_year(field,tag)
     # filter_authors_by_year(tag,2012)
-    paper_author_cits(tag)
+    # paper_author_cits(tag)
+
+    filter_papers()
 
 
