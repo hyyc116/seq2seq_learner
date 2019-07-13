@@ -299,15 +299,15 @@ def filter_papers(tag):
 
         limits = total_limits[total]
         xs.append(total)
-        ys.append(np.mean(limits))
-        ys2.append(np.median(limits))
+        ys.append(limits)
+        # ys2.append(np.median(limits))
 
     print('Total number of papers:{} ...'.format(num_count))
 
     plt.figure(figsize=(4,3))
 
     plt.plot(xs,ys,'-',label='Mean',linewidth=2)
-    plt.plot(xs,ys2,label='Median',linewidth=2)
+    # plt.plot(xs,ys2,label='Median',linewidth=2)
 
     plt.xlabel("total number of citations")
     plt.ylabel('percentage of citations made by existing authors')
