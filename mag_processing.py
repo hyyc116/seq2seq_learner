@@ -326,12 +326,13 @@ def filter_papers(tag):
 
     plt.figure(figsize=(4,3))
 
-    plt.boxplot(xs,ys)
+    plt.boxplot(ys)
     # plt.plot(xs,ys2,label='Median',linewidth=2)
 
     plt.xlabel("year")
     plt.ylabel('percents')
 
+    plt.xticks(range(len(xs)),xs)
     # plt.xscale('log')
     # plt.yscale('log')
 
