@@ -332,7 +332,7 @@ def filter_papers(tag):
     plt.xlabel("year")
     plt.ylabel('percents')
 
-    plt.xticks(range(len(xs)),xs)
+    plt.xticks(range(len(xs))+1,xs)
     # plt.xscale('log')
     # plt.yscale('log')
 
