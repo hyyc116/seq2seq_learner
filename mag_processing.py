@@ -284,7 +284,7 @@ def filter_papers(tag):
     total_limits = defaultdict(list)
     for paper_id in _2012_paper_cn.keys():
 
-        if _2012_paper_cn[paper_id]<10:
+        if _2012_paper_cn[paper_id]<5:
             continue
 
         num_count+=1
