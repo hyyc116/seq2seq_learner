@@ -320,6 +320,8 @@ def filter_papers(tag):
         ys.append(percents)
         # ys2.append(np.median(limits))
 
+    print xs
+
     print('Total number of papers:{} ...'.format(num_count))
 
     plt.figure(figsize=(4,3))
@@ -330,8 +332,8 @@ def filter_papers(tag):
     plt.xlabel("year")
     plt.ylabel('percents')
 
-    plt.xscale('log')
-    plt.yscale('log')
+    # plt.xscale('log')
+    # plt.yscale('log')
 
     plt.tight_layout()
 
