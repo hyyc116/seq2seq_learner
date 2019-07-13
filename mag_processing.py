@@ -108,6 +108,10 @@ def read_data(field,tag):
 def read_paper_year(field,tag):
 
     paper_fields = json.loads(open('data/mag_{}_paper_fields.json'.format(tag)).read())
+
+
+
+
     query_op = dbop()
     sql = 'select paper_id,year from mag_core.papers'
     paper_year = {}
@@ -263,13 +267,16 @@ def filter_papers(tag):
 
         if cited_pid in _2012_papers:
 
+            if paper_year.get(pid,0)==0:
+                continue
+
             _2012_paper_cn[cited_pid]+=1
 
-            _2012_papers_cits[cited_pid][int(paper_year[pid])].append(pid)
+            _2012_papers_cits[cited_pid][int(paper_year[str(pid)])].append(pid)
 
             if pid in reserved_paper_ids:
 
-                _2012_papers_limit_cits[cited_pid][int(paper_year[pid])].append(pid)
+                _2012_papers_limit_cits[cited_pid][int(paper_year[str(pid)])].append(pid)
 
 
     ## 统计分析随着时间 2012年论文被引用次数在发表后不同的时间中，被作者引用以及全部引用的关系
@@ -296,7 +303,7 @@ def filter_papers(tag):
 
             ## 查看比例
 
-            p = a_cn/float(t_cn)
+            p = len(a_cn)/float(len(t_cn))
 
 
             y_percents[y].append(p)
