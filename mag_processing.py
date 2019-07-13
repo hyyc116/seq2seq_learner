@@ -278,6 +278,10 @@ def filter_papers(tag):
     xs = []
 
     ys = []
+
+    ys2 = []
+
+    total_limits = defaultdict(list)
     for paper_id in _2012_paper_cn.keys():
 
         if _2012_paper_cn[paper_id]<10:
@@ -289,18 +293,24 @@ def filter_papers(tag):
 
         limit = len(_2012_papers_limit_cits[paper_id])/total
 
+        total_limits[total].append(limit)
 
+    for total in sorted(total_limits.keys()):
+
+        limits = total_limits[total]
         xs.append(total)
-        ys.append(limit)
+        ys.append(np.mean(limits))
+        ys2.append(np.median(limits))
 
     print('Total number of papers:{} ...'.format(num_count))
 
     plt.figure(figsize=(4,3))
 
-    plt.plot(xs,ys,'o')
+    plt.plot(xs,ys,'-',label='Mean',linewidth=2)
+    plt.plot(xs,ys2,label='Median',linewidth=2)
 
     plt.xlabel("total number of citations")
-    plt.ylabel('citations made by old authors')
+    plt.ylabel('percentage of citations made by existing authors')
 
     plt.xscale('log')
     plt.yscale('log')
