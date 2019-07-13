@@ -324,7 +324,7 @@ def filter_papers(tag):
 
     plt.figure(figsize=(4,3))
 
-    plt.boxplot(xs,ys,label='Mean',linewidth=2)
+    plt.boxplot(xs,ys)
     # plt.plot(xs,ys2,label='Median',linewidth=2)
 
     plt.xlabel("year")
