@@ -306,7 +306,7 @@ def filter_papers(tag):
 
     plt.figure(figsize=(4,3))
 
-    plt.plot(xs,ys,'-',label='Mean',linewidth=2)
+    plt.plot(xs,ys,'o',label='Mean',linewidth=2)
     # plt.plot(xs,ys2,label='Median',linewidth=2)
 
     plt.xlabel("total number of citations")
