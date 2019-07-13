@@ -298,7 +298,7 @@ def filter_papers(tag):
             if t_cn ==0:
                 continue
 
-            a_cn = _2012_papers_limit_cits[paper_id].get(y,0)
+            a_cn = _2012_papers_limit_cits[paper_id].get(y,[])
 
 
             ## 查看比例
