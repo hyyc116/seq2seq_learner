@@ -146,7 +146,7 @@ def read_paper_year(field,tag):
     plt.ylabel("number of papers")
 
     plt.yscale('log')
-    
+
 
     plt.tight_layout()
 
@@ -287,7 +287,7 @@ def filter_papers(tag):
 
         total = len(_2012_papers_cits[paper_id])
 
-        limit = len(_2012_papers_limit_cits[paper_id])
+        limit = len(_2012_papers_limit_cits[paper_id])/total
 
 
         xs.append(total)
