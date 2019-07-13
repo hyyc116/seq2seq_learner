@@ -251,8 +251,8 @@ def filter_papers(tag):
 
     ## 统计2012年论文的引用次数
     _2012_paper_cn = defaultdict(int)
-    _2012_papers_cits = defaultdict(list)
-    _2012_papers_limit_cits = defaultdict(list)
+    _2012_papers_cits = defaultdict(lambda:defaultdict(list))
+    _2012_papers_limit_cits = defaultdict(lambda:defaultdict(list))
 
     ## 加载引用关系
     for line in open('data/mag_{}_paper_cits.txt'.format(tag)):
@@ -265,52 +265,63 @@ def filter_papers(tag):
 
             _2012_paper_cn[cited_pid]+=1
 
-            _2012_papers_cits[cited_pid].append(pid)
+            _2012_papers_cits[cited_pid][int(paper_year[pid])].append(pid)
 
             if pid in reserved_paper_ids:
 
-                _2012_papers_limit_cits[cited_pid].append(pid)
+                _2012_papers_limit_cits[cited_pid][int(paper_year[pid])].append(pid)
 
 
-    ## 统计分析随着时间 2012年作者
+    ## 统计分析随着时间 2012年论文被引用次数在发表后不同的时间中，被作者引用以及全部引用的关系
     num_count = 0
+
+    y_percents =defaultdict(list)
+    for paper_id in _2012_paper_cn.keys():
+
+        if _2012_paper_cn[paper_id]<50:
+            continue
+
+        num_count+=1
+
+
+        for  y in [2012,2013,2014,2015,2016,2017]:
+
+            t_cn = _2012_papers_cits[paper_id].get(y,0)
+
+            if t_cn ==0:
+                continue
+
+            a_cn = _2012_papers_limit_cits[paper_id].get(y,0)
+
+
+            ## 查看比例
+
+            p = a_cn/float(t_cn)
+
+
+            y_percents[y].append(p)
 
     xs = []
 
     ys = []
 
-    ys2 = []
 
-    total_limits = defaultdict(list)
-    for paper_id in _2012_paper_cn.keys():
+    for y in sorted(y_percents.keys()):
 
-        if _2012_paper_cn[paper_id]<5:
-            continue
-
-        num_count+=1
-
-        total = len(_2012_papers_cits[paper_id])
-
-        limit = len(_2012_papers_limit_cits[paper_id])/total
-
-        total_limits[total].append(limit)
-
-    for total in sorted(total_limits.keys()):
-
-        limits = total_limits[total]
-        xs.append(total)
-        ys.append(limits)
+        percents = y_percents[y]
+        xs.append(y)
+        ys.append(percents)
         # ys2.append(np.median(limits))
 
     print('Total number of papers:{} ...'.format(num_count))
 
     plt.figure(figsize=(4,3))
 
-    plt.plot(xs,ys,'o',label='Mean',linewidth=2)
+    plt.boxplot(xs,ys,label='Mean',linewidth=2)
     # plt.plot(xs,ys2,label='Median',linewidth=2)
 
-    plt.xlabel("total number of citations")
-    plt.ylabel('percentage of citations made by existing authors')
+    plt.xlabel("year")
+    plt.ylabel('percents')
 
     plt.xscale('log')
     plt.yscale('log')
