@@ -285,7 +285,7 @@ def filter_papers(tag):
     y_percents =defaultdict(list)
     for paper_id in _2012_paper_cn.keys():
 
-        if _2012_paper_cn[paper_id]<5:
+        if _2012_paper_cn[paper_id]<10:
             continue
 
         num_count+=1
