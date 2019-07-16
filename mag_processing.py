@@ -393,10 +393,17 @@ def gen_data(tag):
     ##对于2012发表的论文
     print('gen data ...')
     lines = []
+    progress=0
     for pid in paper_year_citings.keys():
 
         if pid not in _2012_papers:
             continue
+
+        progress+=1
+
+        if progress%10000==0:
+
+            print('Number of training data {} ..'.format(len(lines)))
 
         ## 按照年份将作者被各个作者引用的次数进行记录
         author_times = defaultdict(int)
@@ -427,14 +434,6 @@ def gen_data(tag):
 
     open('data/pid_author_year_num.txt','w').write('\n'.join(lines))
     print('Data Saved to data/pid_author_year_num.txt.')
-
-
-
-
-
-
-
-
 
 
 
