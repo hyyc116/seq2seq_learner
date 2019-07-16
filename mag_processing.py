@@ -380,7 +380,7 @@ def gen_data(tag):
     paper_year_citings =  defaultdict(lambda:defaultdict(list))
     for line in open('data/mag_{}_paper_cits.txt'.format(tag)):
 
-        pid,cited_pid = line.split(',')
+        pid,cited_pid = line.strip().split(',')
 
         pyear = paper_year.get(pid,None)
 
