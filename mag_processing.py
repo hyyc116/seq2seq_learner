@@ -389,6 +389,8 @@ def gen_data(tag):
 
         paper_year_citings[cited_pid][int(pyear)].append(pid)
 
+    print('Length of paper year citings {} ...'.format(len(paper_year_citings)))
+
 
     ##对于2012发表的论文
     print('gen data ...')
