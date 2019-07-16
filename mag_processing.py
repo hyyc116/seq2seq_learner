@@ -343,6 +343,94 @@ def filter_papers(tag):
     print('Number of paper citations and limitations.')
 
 
+##  生成训练数据
+def gen_data(tag):
+
+    ## 2012年的id，在2012年，2013年，2016年被引用的总次数以及被某位作者引用的次数
+
+    ## id, year, author, number
+
+    ## 12121, 2012, ALL, 10 // ALL表示所有人，包括新作者
+    ## 12121, 2012, a1, 2 // 这篇文章被作者a1在2012年引用了两次
+    print('Load 2012 paper data ...')
+    _2012_papers = set([paper_id.strip() for paper_id in open('data/mag_{}_2012_papers.txt'.format(tag))])
+
+    ##加载作者文章
+    print('Load author paper data ...')
+
+    author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
+
+    paper_author = defaultdict(list)
+
+    for author in author_papers.keys():
+
+        for paper,ix in author_papers[author]:
+
+            paper_author[paper].append([author,ix])
+
+    ## paper year
+    print('Load paper year data ...')
+    paper_year = json.loads(open('data/mag_{}_paper_year.json'.format(tag)).read())
+
+    print('Load citing relations ...')
+
+    paper_year_citings =  defaultdict(lambda:defaultdict(list))
+    for line in open('data/mag_{}_paper_cits.txt'.format(tag)):
+
+        pid,cited_pid = line.split(',')
+
+        pyear = paper_year[pid]
+
+        paper_year_citings[cited_pid][int(pyear)].append(pid)
+
+
+    ##对于2012发表的论文
+    print('gen data ...')
+    lines = []
+    for pid in paper_year_citings.keys():
+
+        if pid not in _2012_papers:
+            continue
+
+        ## 按照年份将作者被各个作者引用的次数进行记录
+        author_times = defaultdict(int)
+        total = 0
+        for year in sorted(paper_year_citings[pid].keys()):
+            citings = paper_year_citings[pid][year]
+
+            ## 每一篇引证文献
+            for citing_pid in citings:
+
+                authors = paper_author[citing_pid]
+
+                for author,ix in authors:
+
+                    author_times[author]+=1
+
+            for author in author_times.keys():
+
+                line = '{},{},{},{}'.format(pid,year,author,author_times[author])
+                lines.append(line)
+
+            total+= len(citings)
+            line = '{},{},{},{}'.format(pid,year,'ALL',total)
+            lines.append(line)
+
+    open('data/pid_author_year_num.txt','w').write('\n'.join(lines))
+    print('Data Saved to data/pid_author_year_num.txt.')
+
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     field = 'computer science'
     tag = 'cs'
