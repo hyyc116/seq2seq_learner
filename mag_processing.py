@@ -382,7 +382,10 @@ def gen_data(tag):
 
         pid,cited_pid = line.split(',')
 
-        pyear = paper_year[pid]
+        pyear = paper_year.get(pid,None)
+
+        if pyear is None:
+            continue
 
         paper_year_citings[cited_pid][int(pyear)].append(pid)
 
