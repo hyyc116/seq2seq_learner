@@ -355,6 +355,9 @@ def gen_data(tag):
     print('Load 2012 paper data ...')
     _2012_papers = set([paper_id.strip() for paper_id in open('data/mag_{}_2012_papers.txt'.format(tag))])
 
+    print('Load author paper ...')
+    reserved_paper_ids = set([paper_id.strip() for paper_id in open('data/mag_{}_reserved_papers.txt'.format(tag))])
+
     ##加载作者文章
     print('Load author paper data ...')
 
@@ -400,6 +403,9 @@ def gen_data(tag):
 
             ## 每一篇引证文献
             for citing_pid in citings:
+
+                if citing_pid is not in reserved_paper_ids:
+                    continue
 
                 authors = paper_author[citing_pid]
 
