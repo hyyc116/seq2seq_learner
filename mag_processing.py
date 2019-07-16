@@ -387,7 +387,9 @@ def gen_data(tag):
         if pyear is None:
             continue
 
-        paper_year_citings[cited_pid][int(pyear)].append(pid)
+        if cited_pid in _2012_papers:
+
+            paper_year_citings[cited_pid][int(pyear)].append(pid)
 
     print('Length of paper year citings {} ...'.format(len(paper_year_citings)))
 
@@ -397,9 +399,6 @@ def gen_data(tag):
     lines = []
     progress=0
     for pid in paper_year_citings.keys():
-
-        if pid not in _2012_papers:
-            continue
 
         progress+=1
 
