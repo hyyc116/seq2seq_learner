@@ -404,7 +404,7 @@ def gen_data(tag):
             ## 每一篇引证文献
             for citing_pid in citings:
 
-                if citing_pid is not in reserved_paper_ids:
+                if citing_pid not in reserved_paper_ids:
                     continue
 
                 authors = paper_author[citing_pid]
