@@ -439,6 +439,7 @@ if __name__ == '__main__':
     # filter_authors_by_year(tag,2012)
     # paper_author_cits(tag)
 
-    filter_papers(tag)
+    # filter_papers(tag)
 
+    gen_data(tag)
 
