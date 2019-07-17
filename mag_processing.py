@@ -46,7 +46,7 @@ def read_data(field,tag):
             print('read field progress {} ..'.format(progress))
 
 
-        if field.lower() in normalized_name:
+        if field.lower() in normalized_name.strip():
             field_id_name_dict[field_of_study_id] = normalized_name
 
     print('{} fields related to {}.'.format(len(field_id_name_dict),field))
@@ -83,6 +83,7 @@ def read_data(field,tag):
     progress = 0
 
     author_papers = defaultdict(list)
+    paper_authors = defaultdict(list)
     sql = 'select paper_id,author_id,author_sequence_number from mag_core.paper_author_affiliations'
     for paper_id,author_id,author_sequence_number in query_op.query_database(sql):
 
@@ -95,23 +96,19 @@ def read_data(field,tag):
             continue
 
         author_papers[author_id].append([paper_id,author_sequence_number])
+        paper_authors[paper_id].append([author_id,author_sequence_number])
 
     print('There are {} authors in this field..'.format(len(author_papers)))
     open('data/mag_{}_author_papers.json'.format(tag),'w').write(json.dumps(author_papers))
     print('author papers json saved to data/mag_{}_author_papers.json'.format(tag))
-
+    open('data/mag_{}_paper_authors.json'.format(tag),'w').write(json.dumps(paper_authors))
+    print('author papers json saved to data/mag_{}_paper_authors.json'.format(tag))
     print('Done')
 
 
-    # 根据作者的id，获取作者所有的论文
-
+# 根据作者的id，获取作者所有的论文
 def read_paper_year(field,tag):
-
     paper_fields = json.loads(open('data/mag_{}_paper_fields.json'.format(tag)).read())
-
-
-
-
     query_op = dbop()
     sql = 'select paper_id,year from mag_core.papers'
     paper_year = {}
@@ -159,67 +156,48 @@ def read_paper_year(field,tag):
     print('Fig saved to fig/mag_{}_paper_year_num_dis.png'.format(tag))
 
 ## 作者以2012为界限，分为2012年以前以及2012年之后两部分，作者在2012年以前发表过论文就是2012年之前的作者，并且在2012年之后也发表过论文就是我们需要的作者
-def filter_authors_by_year(tag,f_year):
+def filter_authors_by_year(tag,f_year,e_year):
 
     author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
-
     paper_year = json.loads(open('data/mag_{}_paper_year.json'.format(tag)).read())
 
     ## 根据上述规则对用户进行筛选
     reserved_authors = []
+    reserved_paper_ids = []
     for author in author_papers:
 
         years = []
+        papers = []
         for paper,sn in author_papers[author]:
 
             years.append(int(paper_year[paper]))
+            papers.append(paper)
 
-        if np.min(years) <f_year and np.max(years)>=2017:
+        if np.min(years) <f_year and np.max(years)>=e_year:
 
             reserved_authors.append(author)
 
-    print('{} Authors reserved.'.format(len(reserved_authors)))
+            reserved_paper_ids.extend(papers)
+
+    reserved_paper_ids = list(set(reserved_paper_ids))
+
+    print('{} Authors reserved, with {}.'.format(len(reserved_authors),len(reserved_paper_ids)))
 
     open('data/mag_{}_reserved_authors.txt'.format(tag),'w').write('\n'.join(reserved_authors))
 
     print('Data saved to data/mag_{}_reserved_authors.txt'.format(tag))
 
+
+    open('data/mag_{}_reserved_papers.txt'.format(tag),'w').write('\n'.join(reserved_paper_ids))
+    print('Reserved paper ids saved to data/mag_{}_reserved_papers.txt'.format(tag))
+
 ## 将2012年的论文 预测其2013年后 2014年后 2017年被2012年之前的作者引用的次数
 def paper_author_cits(tag):
 
+    ## 改领域所有论文的发表时间
     paper_year = json.loads(open('data/mag_{}_paper_year.json'.format(tag)).read())
 
-    paper_ids= []
-    for paper in paper_year.keys():
-
-        year  = int(paper_year[paper])
-
-        if year==2012:
-            paper_ids.append(paper)
-
-    author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
-
-    open('data/mag_{}_2012_papers.txt'.format(tag),'w').write('\n'.join(paper_ids))
-
-    reserved_authors = [ author.strip() for author in  open('data/mag_{}_reserved_authors.txt'.format(tag))]
-
-    reserved_paper_ids = []
-    for author in reserved_authors:
-
-        reserved_paper_ids.extend([p for p,_ in author_papers[author]])
-
-    paper_ids = set(paper_ids)
-
-    print('Number of papers published in 2012 is {}.'.format(len(paper_ids)))
-
-    reserved_paper_ids = set(reserved_paper_ids)
-
-    open('data/mag_{}_reserved_papers.txt'.format(tag),'w').write('\n'.join(reserved_paper_ids))
-
-
-    print('Number of papers of auhtors is {}.'.format(len(reserved_paper_ids)))
-
-    ## 根据paper_ids以及已存在的
+    ## 根据是否存在发表时间来判断，领域内引用
     query_op = dbop()
 
     sql = 'select paper_id,paper_reference_id from mag_core.paper_references'
@@ -232,7 +210,7 @@ def paper_author_cits(tag):
         if progress%10000000==0:
             print('progress {}, {} citations ...'.format(progress,len(paper_refs)))
 
-        if paper_id in reserved_paper_ids or  paper_reference_id in paper_ids:
+        if paper_year.get(paper_id,None) is not None and paper_year.get(paper_reference_id,None) is not None:
 
             paper_refs.append('{},{}'.format(paper_id,paper_reference_id))
 
@@ -240,23 +218,29 @@ def paper_author_cits(tag):
     print('{} citation relations saved to data/mag_{}_paper_cits.txt'.format(len(paper_refs),tag))
 
 
+
 ## 根据N年的历史进行预测N年的结果
 def filter_papers(tag):
-    ## 根据文章的被引用情况对2012年的论文进行筛选
-    _2012_papers = set([paper_id.strip() for paper_id in open('data/mag_{}_2012_papers.txt'.format(tag))])
-
-    reserved_paper_ids = set([paper_id.strip() for paper_id in open('data/mag_{}_reserved_papers.txt'.format(tag))])
-
-    ##加载作者文章
-    author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
 
     ## paper year
     paper_year = json.loads(open('data/mag_{}_paper_year.json'.format(tag)).read())
 
-    ## 统计2012年论文的引用次数
+    ##加载作者文章
+    author_papers = json.loads(open('data/mag_{}_author_papers.json'.format(tag)).read())
+    ## 文章与作者的对应关系
+    paper_authors = json.loads(open('data/mag_{}_paper_authors.json'.format(tag)).read())
+
+    ## 根据文章的被引用情况对2012年的论文进行筛选
+    _2012_papers = set([paper_id.strip() for paper_id in paper_year.keys() if paper_year[paper_id]==2012])
+    reserved_paper_ids = set([paper_id.strip() for paper_id in open('data/mag_{}_reserved_papers.txt'.format(tag))])
+
+    ## 统计2012年论文的引用总次数
     _2012_paper_cn = defaultdict(int)
-    _2012_papers_cits = defaultdict(lambda:defaultdict(list))
-    _2012_papers_limit_cits = defaultdict(lambda:defaultdict(list))
+    ## 统计2012年论文每年的引用论文
+    _2012_paper_year_cn = defaultdict(lambda:defaultdict(list))
+
+    ## 统计2012年的论文被各个作者引用的情况
+    _2012_paper_year_author = defaultdict(lambda:defaultdict(list))
 
     ## 加载引用关系
     for line in open('data/mag_{}_paper_cits.txt'.format(tag)):
@@ -272,12 +256,11 @@ def filter_papers(tag):
 
             _2012_paper_cn[cited_pid]+=1
 
-            _2012_papers_cits[cited_pid][int(paper_year[str(pid)])].append(pid)
+            _2012_paper_year_cn[cited_pid][int(paper_year[str(pid)])].append(pid)
 
-            if pid in reserved_paper_ids:
+            for author,ix in paper_authors[pid]:
 
-                _2012_papers_limit_cits[cited_pid][int(paper_year[str(pid)])].append(pid)
-
+                _2012_paper_year_author[cited_pid][int(paper_year[str(pid)])].append(author)
 
     ## 统计分析随着时间 2012年论文被引用次数在发表后不同的时间中，被作者引用以及全部引用的关系
     num_count = 0
@@ -443,12 +426,12 @@ def gen_data(tag):
 if __name__ == '__main__':
     field = 'computer science'
     tag = 'cs'
-    # read_data(field,tag)
-    # read_paper_year(field,tag)
-    # filter_authors_by_year(tag,2012)
-    # paper_author_cits(tag)
+    read_data(field,tag)
+    read_paper_year(field,tag)
+    filter_authors_by_year(tag,2012,2017)
+    paper_author_cits(tag)
 
     # filter_papers(tag)
 
-    gen_data(tag)
+    # gen_data(tag)
 
