@@ -320,8 +320,8 @@ def filter_papers(tag):
                 lines.append(line)
 
             ## 今年被引用的总次数，因为合作的存在导致被作者引用次数的和大于总次数
-            line.append('{},{},{},{}'.format(paper_id,y,'ALL',cn))
-            lines.append(line)
+            lines.append('{},{},{},{}'.format(paper_id,y,'ALL',cn))
+            # lines.append(line)
             
 
             ## 查看被已有作者引用的次数与总次数之间的关系
