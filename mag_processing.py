@@ -455,7 +455,7 @@ if __name__ == '__main__':
     # read_data(field,tag)
     # read_paper_year(field,tag)
     # filter_authors_by_year(tag,2012,2017)
-    paper_author_cits(tag)
+    # paper_author_cits(tag)
 
     filter_papers(tag)
 
