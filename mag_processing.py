@@ -312,7 +312,9 @@ def filter_papers(tag):
 
                     ## 这位作者到今年引用的次数
                     for ca,ix in c_aus:
-                        author_ts[ca]+=1
+
+                        if ix==1:
+                            author_ts[ca]+=1
 
             ## 每一年输出这个作者引用的次数，
             for cau in author_ts.keys():
