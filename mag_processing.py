@@ -262,40 +262,65 @@ def filter_papers(tag):
 
                 _2012_paper_year_author[cited_pid][int(paper_year[str(pid)])].append(author)
 
+
+    ## 1. 首先根据被引用的总次数进行过滤,总次数要求大于5
+    _2012_papers_used = [paper_id for paper_id in _2012_papers if _2012_paper_cn.get(paper_id,0)>5]
+    print('Number of paper after filtering is {}.'.format(len(_2012_papers_used)))
+
     ## 统计分析随着时间 2012年论文被引用次数在发表后不同的时间中，被作者引用以及全部引用的关系
-    num_count = 0
 
+    ## 根据引用关系，生成每一篇论文在各个年份被作者引用的总次数
     y_percents =defaultdict(list)
-    for paper_id in _2012_paper_cn.keys():
+    lines = []
 
-        if _2012_paper_cn[paper_id]<10:
-            continue
+    total = len(_2012_papers_used)
+    progress = 0
+    for paper_id in _2012_papers_used:
 
-        num_count+=1
+        progress+=1
 
+        if progress%10000==0:
+            print('Gen data progress {}/{}, number of samples {} ...'.format(progress,total,len(lines)))
 
+        cn = _2012_paper_cn[paper_id]
+        author_ts  = defaultdict(int)
         for  y in [2012,2013,2014,2015,2016,2017]:
 
-            t_cn = _2012_papers_cits[paper_id].get(y,0)
+            t_cn = _2012_paper_year_cn[paper_id].get(y,[])
 
-            if t_cn ==0:
-                continue
+            c_b_a = 0
+            for p in t_cn:
+                if p in reserved_paper_ids:
+                    c_b_a+=1
 
-            a_cn = _2012_papers_limit_cits[paper_id].get(y,[])
+                    ## 获得这篇论文的作者
+                    c_aus = paper_authors[p]
 
+                    ## 这位作者到今年引用的次数
+                    for ca in c_aus:
+                        author_ts[ca]+=1
 
-            ## 查看比例
+            ## 每一年输出这个作者引用的次数，
+            for cau in author_ts.keys():
+                c_au_cn = author_ts[cau]
+                line = '{},{},{},{}'.format(paper_id,y,cau,c_au_cn)
+                lines.append(line)
 
-            p = len(a_cn)/float(len(t_cn))
+            ## 今年被引用的总次数，因为合作的存在导致被作者引用次数的和大于总次数
+            line.append('{},{},{},{}'.format(paper_id,y,'ALL',cn))
+            lines.append(line)
+            
 
+            ## 查看被已有作者引用的次数与总次数之间的关系
+            if cn>20:
+                p = c_b_a/float(len(t_cn))
+                y_percents[y].append(p)
 
-            y_percents[y].append(p)
+    open('data/mag_{}_raw_data_paper_author.txt'.format(tag),'w').write('\n'.join(lines))
+    print('{} samples saved to data/mag_{}_raw_data_paper_author.txt'.format(len(lines),tag))
 
     xs = []
-
     ys = []
-
-
     for y in sorted(y_percents.keys()):
 
         percents = y_percents[y]
@@ -303,26 +328,14 @@ def filter_papers(tag):
         ys.append(percents)
         # ys2.append(np.median(limits))
 
-    print xs
-
     print('Total number of papers:{} ...'.format(num_count))
-
     plt.figure(figsize=(4,3))
-
     plt.boxplot(ys)
-    # plt.plot(xs,ys2,label='Median',linewidth=2)
-
     plt.xlabel("year")
     plt.ylabel('percents')
-
     plt.xticks([x+1 for x in range(len(xs))],xs)
-    # plt.xscale('log')
-    # plt.yscale('log')
-
     plt.tight_layout()
-
     plt.savefig('fig/_2012_paper_cit_limit.png',dpi=400)
-
     print('Number of paper citations and limitations.')
 
 
@@ -426,12 +439,12 @@ def gen_data(tag):
 if __name__ == '__main__':
     field = 'computer science'
     tag = 'cs'
-    read_data(field,tag)
-    read_paper_year(field,tag)
-    filter_authors_by_year(tag,2012,2017)
-    paper_author_cits(tag)
+    # read_data(field,tag)
+    # read_paper_year(field,tag)
+    # filter_authors_by_year(tag,2012,2017)
+    # paper_author_cits(tag)
 
-    # filter_papers(tag)
+    filter_papers(tag)
 
     # gen_data(tag)
 
