@@ -197,6 +197,8 @@ def paper_author_cits(tag):
     ## 改领域所有论文的发表时间
     paper_year = json.loads(open('data/mag_{}_paper_year.json'.format(tag)).read())
 
+    paper_authors = json.loads(open('data/mag_{}_paper_authors.json'.format(tag)).read())
+
     ## 根据是否存在发表时间来判断，领域内引用
     query_op = dbop()
 
@@ -210,9 +212,19 @@ def paper_author_cits(tag):
         if progress%10000000==0:
             print('progress {}, {} citations ...'.format(progress,len(paper_refs)))
 
-        if paper_year.get(paper_id,None) is not None and paper_year.get(paper_reference_id,None) is not None:
+        if paper_year.get(paper_id,None) is None:
+            continue
 
-            paper_refs.append('{},{}'.format(paper_id,paper_reference_id))
+        if paper_year.get(paper_reference_id,None) is None:
+            continue
+
+        if paper_authors.get(paper_id,None) is None:
+            continue
+
+        if paper_authors.get(paper_reference_id,None) is None:
+            continue
+
+        paper_refs.append('{},{}'.format(paper_id,paper_reference_id))
 
     open('data/mag_{}_paper_cits.txt'.format(tag),'w').write('\n'.join(paper_refs))
     print('{} citation relations saved to data/mag_{}_paper_cits.txt'.format(len(paper_refs),tag))
