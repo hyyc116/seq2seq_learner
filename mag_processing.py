@@ -297,6 +297,7 @@ def filter_papers(tag):
 
         cn = _2012_paper_cn[paper_id]
         author_ts  = defaultdict(int)
+        t_cn_t = 0
         for  y in [2012,2013,2014,2015,2016,2017]:
 
             t_cn = _2012_paper_year_cn[paper_id].get(y,[])
@@ -319,8 +320,9 @@ def filter_papers(tag):
                 line = '{},{},{},{}'.format(paper_id,y,cau,c_au_cn)
                 lines.append(line)
 
+            t_cn_t+=t_cn
             ## 今年被引用的总次数，因为合作的存在导致被作者引用次数的和大于总次数
-            lines.append('{},{},{},{}'.format(paper_id,y,'ALL',cn))
+            lines.append('{},{},{},{}'.format(paper_id,y,'ALL',t_cn_t))
             # lines.append(line)
             
 
