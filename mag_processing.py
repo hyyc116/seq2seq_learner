@@ -325,7 +325,7 @@ def filter_papers(tag):
             
 
             ## 查看被已有作者引用的次数与总次数之间的关系
-            if cn>20:
+            if cn>20 & t_cn>0:
                 p = c_b_a/float(len(t_cn))
                 y_percents[y].append(p)
 
