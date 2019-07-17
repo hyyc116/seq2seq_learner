@@ -231,7 +231,7 @@ def filter_papers(tag):
     paper_authors = json.loads(open('data/mag_{}_paper_authors.json'.format(tag)).read())
 
     ## 根据文章的被引用情况对2012年的论文进行筛选
-    _2012_papers = set([paper_id.strip() for paper_id in paper_year.keys() if paper_year[paper_id]==2012])
+    _2012_papers = set([paper_id.strip() for paper_id in paper_year.keys() if int(paper_year[paper_id])==2012])
     reserved_paper_ids = set([paper_id.strip() for paper_id in open('data/mag_{}_reserved_papers.txt'.format(tag))])
 
     ## 统计2012年论文的引用总次数
