@@ -41,7 +41,7 @@ def read_data(field,tag):
 
         progress+=1
 
-        if progress%100000==0:
+        if progress%10000000==0:
 
             print('read field progress {} ..'.format(progress))
 
@@ -66,7 +66,7 @@ def read_data(field,tag):
 
         progress+=1
 
-        if progress%100000==0:
+        if progress%10000000==0:
             print('read field paper progress {} ...'.format(progress))
 
         if field_id_name_dict.get(field_of_study_id,None) is None or score < 0.1:
@@ -89,7 +89,7 @@ def read_data(field,tag):
 
         progress+=1
 
-        if progress%100000==0:
+        if progress%10000000==0:
             print('read author id {} ...'.format(progress))
 
         if paper_fields.get(paper_id,None) is None:
@@ -118,7 +118,7 @@ def read_paper_year(field,tag):
 
         progress+=1
 
-        if progress%1000000==0:
+        if progress%10000000==0:
             print('Read paper year， progress {}, {} paper has year ...'.format(progress,len(paper_year)))
 
         if paper_fields.get(paper_id,None) is None:
