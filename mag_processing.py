@@ -328,7 +328,7 @@ def filter_papers(tag):
         ys.append(percents)
         # ys2.append(np.median(limits))
 
-    print('Total number of papers:{} ...'.format(num_count))
+    # print('Total number of papers:{} ...'.format(num_count))
     plt.figure(figsize=(4,3))
     plt.boxplot(ys)
     plt.xlabel("year")
