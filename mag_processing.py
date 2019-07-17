@@ -320,7 +320,7 @@ def filter_papers(tag):
                 line = '{},{},{},{}'.format(paper_id,y,cau,c_au_cn)
                 lines.append(line)
 
-            t_cn_t+=t_cn
+            t_cn_t+=len(t_cn)
             ## 今年被引用的总次数，因为合作的存在导致被作者引用次数的和大于总次数
             lines.append('{},{},{},{}'.format(paper_id,y,'ALL',t_cn_t))
             # lines.append(line)
